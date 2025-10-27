@@ -1,22 +1,16 @@
 pipeline {
     agent { label 'windows' }
+
     stages {
-        stage('Checkout with token') {
+        stage('Checkout') {
             steps {
-                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-                    bat '''
-                        git clone https://%GITHUB_TOKEN%@github.com/yourorg/yourrepo.git repo
-                        cd repo
-                        git rev-parse --abbrev-ref HEAD
-                    '''
-                }
+                git branch: 'main', url: 'https://github.com/dhruvsharma152005/maven-demo.git'
             }
         }
 
         stage('Build Java App') {
             steps {
                 bat '''
-                    cd repo
                     mvn -B -DskipTests=true clean package
                 '''
             }
@@ -25,10 +19,11 @@ pipeline {
         stage('Run Application') {
             steps {
                 bat '''
-                    cd repo/target
-                    java -jar myapp.jar
+                    cd target
+                    java -jar maven-demo-1.0-SNAPSHOT.jar
                 '''
             }
         }
     }
 }
+
